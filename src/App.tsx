@@ -1,5 +1,5 @@
 import './App.css'
-import GameBoard from './components/gameBoard/GameBoard'
+import GameBoard from './components/gameBoard/gameBoard'
 function App() {
   
 
