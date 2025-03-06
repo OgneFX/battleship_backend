@@ -26,12 +26,13 @@ export default function gameBoard({size, direction, isSelected, changeSelectedSh
     )
 
     const checkPlaceForShip = (x:number, y:number) => {
-      console.log(isSelected)
+      
       if(!isSelected) return;
         setGrid((prevGrid) => {
           const newGrid = prevGrid.map((row) => row.map((cell) => ({ ...cell, isHelpView: false }))); 
-
           
+
+
           if (direction === "horizontal" && y + size <= 10) {
             for (let i = 0; i < size; i++) {
               newGrid[x][y + i].isHelpView = true;
@@ -82,7 +83,7 @@ export default function gameBoard({size, direction, isSelected, changeSelectedSh
         const markAdjacentCells = (x: number, y: number) => {
           const directions = [
             [-1, -1], [-1, 0], [-1, 1],
-            [ 0, -1],         [ 0, 1],
+            [ 0, -1],          [ 0, 1],
             [ 1, -1], [ 1, 0], [ 1, 1],
           ];
     
@@ -129,7 +130,9 @@ export default function gameBoard({size, direction, isSelected, changeSelectedSh
                 onMouseLeave={() => uncheckPlaceForShip()}
                 onClick={() => placeShip(rowIndex, colIndex)}
                 className={`w-10 h-10 border border-gray-600 flex items-center justify-center
-                  ${cell.isHelpView ? "bg-green-300" : cell.hasShip ? "bg-blue-500" : "bg-gray-200"}`}
+                  ${isSelected ? (cell.isHelpView ? "bg-blue-500" : cell.isPlace ? "bg-green-200" : cell.hasShip ? "bg-blue-500" : "bg-red-200") : 
+                                  cell.hasShip ? "bg-blue-500" : "bg-gray-200"}`
+                  }
               ></div>
             ))}
           </>

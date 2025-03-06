@@ -48,7 +48,7 @@ export default function buttonShip({shipInfo}:buttonShipProps) {
               ship.isPlaces ? "pointer-events-none opacity-50" : ""
             }`}
             onClick={(e) => {
-              if (ship.isPlaces) return; // Не даём кликать, если уже установлен
+              if (ship.isPlaces) return; 
               e.stopPropagation();
               handlerSelected(ship.id, ship.size, ship.direction);
             }}
@@ -59,7 +59,7 @@ export default function buttonShip({shipInfo}:buttonShipProps) {
                 className={`w-10 h-10 border border-gray-600 flex items-center justify-center transition-all
                   ${
                     ship.isPlaces
-                      ? "border-dashed bg-gray-100" // Если корабль установлен — пунктир
+                      ? "border-dashed bg-gray-100" 
                       : selectedShip === ship.id
                       ? "bg-blue-500"
                       : "bg-gray-300"
