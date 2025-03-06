@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
-// import { Cell, placeShipManually } from '../../utils/manualPlacement';
+
 
 type gameBoardProps = {
   size: number;
   direction: string;
   isSelected: boolean;
+  changeSelectedShip: (selected: boolean) => void
 }
 
 const GRID_SIZE = 10;
 const makeGrid = () => {
   return Array.from({length: GRID_SIZE}, () => 
-    Array.from({length: GRID_SIZE}, () => ({hasShip: false, hit: false, isPlace: false}))
+    Array.from({length: GRID_SIZE}, () => ({hasShip: false, hit: false, isHelpView: false, isPlace: true }))
   );
 }
 
-export default function gameBoard({size, direction, isSelected}:gameBoardProps) {
+export default function gameBoard({size, direction, isSelected, changeSelectedShip}:gameBoardProps) {
     
     const[grid, setGrid] = useState(makeGrid());
 
@@ -24,45 +25,86 @@ export default function gameBoard({size, direction, isSelected}:gameBoardProps) 
       </div>
     )
 
-    // const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].map((item) =>
-    //   <div>
-    //     {item}
-    //   </div>
-    // )
+    const checkPlaceForShip = (x:number, y:number) => {
+      console.log(isSelected)
+      if(!isSelected) return;
+        setGrid((prevGrid) => {
+          const newGrid = prevGrid.map((row) => row.map((cell) => ({ ...cell, isHelpView: false }))); 
 
-   
+          
+          if (direction === "horizontal" && y + size <= 10) {
+            for (let i = 0; i < size; i++) {
+              newGrid[x][y + i].isHelpView = true;
+            }
+          } else if (direction === "vertical" && x + size <= 10) {
+            for (let i = 0; i < size; i++) {
+              newGrid[x + i][y].isHelpView = true;
+            }
+          }
+      
+          return newGrid;
+        });
+      
+      
+    };
 
-    // const grid = makeGrid().map((row, rowIndex) => (
-    //   <>
-        
-    //     <div key={rowIndex} className="flex items-center justify-center">
-    //       {numbers[rowIndex]}
-    //     </div>
+    const uncheckPlaceForShip = () => {
+      setGrid((prevGrid) => 
+        prevGrid.map(row => row.map(cell => ({ ...cell, isHelpView: false }))))
+    }
+
+    const placeShip = (x:number, y:number) => {
+      if (!isSelected) return;
+
+      setGrid((prevGrid) => {
+        const newGrid = prevGrid.map((row) => row.map((cell) => ({ ...cell })));
+    
+        const shipCells: { x: number; y: number }[] = [];
+    
+       
+        for (let i = 0; i < size; i++) {
+          const newX = direction === "vertical" ? x + i : x;
+          const newY = direction === "horizontal" ? y + i : y;
+    
+          if (newX >= 10 || newY >= 10 || !newGrid[newX][newY].isHelpView || newGrid[newX][newY].isPlace === false) {
+            return prevGrid; 
+          }
+    
+          shipCells.push({ x: newX, y: newY });
+        }
     
         
-    //     {row.map((cell, colIndex) => (
-    //       <div
-    //         key={`${rowIndex}-${colIndex}`}
-    //         onMouseEnter={() => checkPlaceForShip(rowIndex, colIndex)}
-    //         className={`w-10 h-10 border border-gray-600 flex items-center justify-center 
-    //           ${cell.hasShip ? "bg-blue-500" : "bg-gray-200"}`}
-    //       ></div>
-    //     ))}
-    //   </>
-    // ));
+        shipCells.forEach(({ x, y }) => {
+          newGrid[x][y].hasShip = true;
+          newGrid[x][y].isHelpView = false; 
+        });
 
-   
-    const checkPlaceForShip = (x:number, y:number) => {
-      setGrid((prevGrid) => {
+        const markAdjacentCells = (x: number, y: number) => {
+          const directions = [
+            [-1, -1], [-1, 0], [-1, 1],
+            [ 0, -1],         [ 0, 1],
+            [ 1, -1], [ 1, 0], [ 1, 1],
+          ];
+    
+          directions.forEach(([dx, dy]) => {
+            const newX = x + dx;
+            const newY = y + dy;
+    
+            if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
+              newGrid[newX][newY].isPlace = false;
+            }
+          });
+        };
+
+        shipCells.forEach(({ x, y }) => markAdjacentCells(x, y));
+    
         
-        const newGrid = prevGrid.map((row) => row.map((cell) => ({ ...cell })));
-  
-        
-        newGrid[x][y].isPlace = !newGrid[x][y].isPlace; // Переключаем состояние
-  
+        changeSelectedShip(false);
+    
         return newGrid;
-      });
-    };
+
+    });
+  }
 
       
 
@@ -79,12 +121,15 @@ export default function gameBoard({size, direction, isSelected}:gameBoardProps) 
             <div key={`num-${rowIndex}`} className="flex items-center justify-center">
               {rowIndex + 1}
             </div>
+
             {row.map((cell, colIndex) => (
               <div
                 key={`${rowIndex}-${colIndex}`}
                 onMouseEnter={() => checkPlaceForShip(rowIndex, colIndex)}
+                onMouseLeave={() => uncheckPlaceForShip()}
+                onClick={() => placeShip(rowIndex, colIndex)}
                 className={`w-10 h-10 border border-gray-600 flex items-center justify-center
-                  ${cell.isPlace ? "bg-green-300" : cell.hasShip ? "bg-blue-500" : "bg-gray-200"}`}
+                  ${cell.isHelpView ? "bg-green-300" : cell.hasShip ? "bg-blue-500" : "bg-gray-200"}`}
               ></div>
             ))}
           </>
@@ -97,27 +142,6 @@ export default function gameBoard({size, direction, isSelected}:gameBoardProps) 
   }
 
    
-    
-  // const [grid, setGrid] = useState<Cell[][]>(makeGrid());
-  // const [selectedShipSize, setSelectedShipSize] = useState<number | null>(4);
-  // const [direction, setDirection] = useState<'horizontal' | 'vertical'>('horizontal');
-
-  // const handleCellClick = (x: number, y: number) => {
-  //   if (selectedShipSize) {
-  //     const { grid: newGrid, ship } = placeShipManually(
-  //       grid,
-  //       x,
-  //       y,
-  //       selectedShipSize,
-  //       direction
-  //     );
-
-  //     if (ship) {
-  //       setGrid(newGrid);
-  //       setSelectedShipSize(null); // Убираем выбранный корабль после размещения
-  //     }
-  //   }
-  // };
 
 
   

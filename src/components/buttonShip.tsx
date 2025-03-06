@@ -3,7 +3,7 @@ import mock from '../data/mock_ships'
 
 
 type buttonShipProps = {
-  shipInfo:(size: number, direction: string, isSelected:boolean) => void;
+  shipInfo:(id: number, size: number, direction: string, isSelected:boolean) => void;
 }
 
 
@@ -15,9 +15,10 @@ export default function buttonShip({shipInfo}:buttonShipProps) {
     
     const handleClickOutside = () => {
       setSelectedShip(null);
+      shipInfo(0, 0, "horizontal", false)
     };
 
-    console.log(selectedShip)
+    
 
     useEffect(() => {
       document.addEventListener("click", handleClickOutside);
@@ -31,35 +32,43 @@ export default function buttonShip({shipInfo}:buttonShipProps) {
     const handlerSelected = (id:number, size: number, direction: string) => {
          setSelectedShip(id)
          
-         shipInfo(size, direction, true)
+         shipInfo(id, size, direction, true)
     }
 
     console.log(ships)
     
 
       
-      return (
-        <div className="flex flex-col space-y-2 p-4 border border-gray-400">
-          {ships.map((ship) => 
-
+    return (
+      <div className="grid grid-cols-2 gap-2 p-4 border border-gray-400">
+        {ships.map((ship) => (
+          <div
+            key={ship.id}
+            className={`flex space-x-1 p-1 cursor-pointer transition-all ${
+              ship.isPlaces ? "pointer-events-none opacity-50" : ""
+            }`}
+            onClick={(e) => {
+              if (ship.isPlaces) return; // Не даём кликать, если уже установлен
+              e.stopPropagation();
+              handlerSelected(ship.id, ship.size, ship.direction);
+            }}
+          >
+            {Array.from({ length: ship.size }).map((_, index) => (
               <div
-                key={ship.id}
-                className={`flex space-x-1 p-1 cursor-pointer backdrop-opacity-0 `}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlerSelected(ship.id, ship.size, ship.direction);
-                  
-                }}
-                
-              >
-                {Array.from({ length: ship.size }).map((_, index) => (
-                  <div key={index} className={`w-10 h-10 border border-gray-600 
-                    ${selectedShip === ship.id ? "bg-blue-500" : "bg-gray-300"}`
-                  }></div>
-                ))}
-              </div>
-            
-          )}
-        </div>
-      );
+                key={index}
+                className={`w-10 h-10 border border-gray-600 flex items-center justify-center transition-all
+                  ${
+                    ship.isPlaces
+                      ? "border-dashed bg-gray-100" // Если корабль установлен — пунктир
+                      : selectedShip === ship.id
+                      ? "bg-blue-500"
+                      : "bg-gray-300"
+                  }`}
+              ></div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+    
 }
