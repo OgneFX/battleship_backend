@@ -26,7 +26,7 @@ export default function gameBoard({size, direction, isSelected, changeSelectedSh
     )
 
     const checkPlaceForShip = (x:number, y:number) => {
-      
+      console.log(grid[x][y])
       if(!isSelected) return;
         setGrid((prevGrid) => {
           const newGrid = prevGrid.map((row) => row.map((cell) => ({ ...cell, isHelpView: false }))); 
@@ -78,6 +78,7 @@ export default function gameBoard({size, direction, isSelected, changeSelectedSh
         shipCells.forEach(({ x, y }) => {
           newGrid[x][y].hasShip = true;
           newGrid[x][y].isHelpView = false; 
+          newGrid[x][y].isPlace = false;
         });
 
         const markAdjacentCells = (x: number, y: number) => {
