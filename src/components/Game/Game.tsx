@@ -1,32 +1,32 @@
 import {useState, useEffect} from 'react'
-import GameBoard from './gameBoard'
-import ButtonShip from './buttonShip'
-import mock from '../data/mock_ships'
+import GameBoard from '../GameBoard/GameBoard'
+import { ButtonShip } from '../ButtonShip/ButtonShip'
+import {ships} from '../../data/mock_ships'
 
 export default function game() {
 
-    const[size, setSize] = useState(0)
-    const[direction, setDirection] = useState("horizontal")
-    const[onSelected, setSelected] = useState(false)
-    const[shipId, setShipId] = useState(0)
+  const[size, setSize] = useState(0)
+  const[direction, setDirection] = useState("horizontal")
+  const[onSelected, setSelected] = useState(false)
+  const[shipId, setShipId] = useState(0)
 
-    const shipInfo = (id: number, size: number, direction: string, isSelected:boolean) => {
-        setShipId(id)
-        setSize(size)
-        setDirection(direction)
-        setSelected(isSelected)
+  const shipInfo = (id: number, size: number, direction: string, isSelected:boolean) => {
+    setShipId(id)
+    setSize(size)
+    setDirection(direction)
+    setSelected(isSelected)
+  }
+
+  const changeSelectedShip = (selected: boolean) => {
+    setSelected(selected)
+    ships.map(item => {
+      if(item.id === shipId)
+      return item.isPlaces = !selected
+    })
+      // console.log(ships)
     }
 
-    const changeSelectedShip = (selected: boolean) => {
-        setSelected(selected)
-        mock.map(item => {
-            if(item.id === shipId)
-                return item.isPlaces = !selected
-        })
-        console.log(mock)
-    }
-
-    useEffect(() => {
+  useEffect(() => {
         const handlerKeyPress = (e: KeyboardEvent) => {
             
             if(onSelected === true && e.key.toLowerCase() === "r") {
