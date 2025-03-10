@@ -1,23 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { ships } from '../../data/mock_ships'
 import { IShip } from '../../interfaces/Ship';
 import { useShipStore } from '../../store/ShipStore';
 
-type buttonShipProps = {
-  shipInfo:(id: number, size: number, direction: string, isSelected:boolean) => void;
-}
+export function ButtonShip() {
+  const { pickedShip, setPicketShip, setIsPicketShip} = useShipStore(state => state)
 
-export function ButtonShip({shipInfo}:buttonShipProps) {
-
-  const [selectedShip, setSelectedShip] = useState<number | null>(null);
-  const { pickedShip, setPicketShip } = useShipStore(state => state)
-  
   const handleClickOutside = () => {
-    setSelectedShip(null);
-    shipInfo(0, 0, "horizontal", false)
+    setPicketShip({ id: 0, size: 0, direction: 'horizontal', isPlaces: false });
+    setIsPicketShip(false)
   };
-
-  
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
@@ -25,20 +17,14 @@ export function ButtonShip({shipInfo}:buttonShipProps) {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-  
-
-  
+    
   const handlerSelected = (e: React.MouseEvent<HTMLElement>, ship: IShip) => {
     if (ship.isPlaces) return;
     e.stopPropagation();
-    // setSelectedShip(id)
     setPicketShip(ship)
+    setIsPicketShip(true)
   }
 
-  console.log(ships)
-    
-
-      
   return (
     <div className="grid grid-cols-2 gap-2 p-4 border border-gray-400">
       {ships.map((ship) => (

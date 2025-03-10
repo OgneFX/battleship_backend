@@ -1,10 +1,9 @@
 import { useState } from 'react';
+import { useShipStore } from '../../store/ShipStore'; 
+
 type gameBoardProps = {
-  size: number;
-  direction: string;
-  isSelected: boolean;
-  changeSelectedShip: (selected: boolean) => void;
-};
+  changeSelectedShip: (selected: number) => void
+}
 
 const GRID_SIZE = 10;
 const makeGrid = () => {
@@ -18,32 +17,31 @@ const makeGrid = () => {
   );
 };
 
-export default function gameBoard({
-  size,
-  direction,
-  isSelected,
-  changeSelectedShip,
-}: gameBoardProps) {
+export function GameBoard({changeSelectedShip}: gameBoardProps) {
   const [grid, setGrid] = useState(makeGrid());
+  const { isPicketShip, pickedShip, setIsPicketShip} = useShipStore(state => state)
 
   const letter = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'].map(
-    (item) => <div>{item}</div>
+    (item) =>
+     <div key={`${item}-letterSymbol`}>
+      {item}
+    </div>
   );
 
   const checkPlaceForShip = (x: number, y: number) => {
-    console.log(grid[x][y]);
-    if (!isSelected) return;
+    
+    if (!isPicketShip) return;
     setGrid((prevGrid) => {
       const newGrid = prevGrid.map((row) =>
         row.map((cell) => ({ ...cell, isHelpView: false }))
       );
 
-      if (direction === 'horizontal' && y + size <= 10) {
-        for (let i = 0; i < size; i++) {
+      if (pickedShip?.direction === 'horizontal' && y + pickedShip?.size <= 10) {
+        for (let i = 0; i < pickedShip.size; i++) {
           newGrid[x][y + i].isHelpView = true;
         }
-      } else if (direction === 'vertical' && x + size <= 10) {
-        for (let i = 0; i < size; i++) {
+      } else if (pickedShip?.direction === 'vertical' && x + pickedShip?.size <= 10) {
+        for (let i = 0; i < pickedShip.size; i++) {
           newGrid[x + i][y].isHelpView = true;
         }
       }
@@ -59,16 +57,17 @@ export default function gameBoard({
   };
 
   const placeShip = (x: number, y: number) => {
-    if (!isSelected) return;
+    if (!isPicketShip) return;
 
     setGrid((prevGrid) => {
       const newGrid = prevGrid.map((row) => row.map((cell) => ({ ...cell })));
 
       const shipCells: { x: number; y: number }[] = [];
 
-      for (let i = 0; i < size; i++) {
-        const newX = direction === 'vertical' ? x + i : x;
-        const newY = direction === 'horizontal' ? y + i : y;
+      if(pickedShip) {
+      for (let i = 0; i < pickedShip.size; i++) {
+        const newX = pickedShip.direction === 'vertical' ? x + i : x;
+        const newY = pickedShip.direction === 'horizontal' ? y + i : y;
 
         if (
           newX >= 10 ||
@@ -81,6 +80,7 @@ export default function gameBoard({
 
         shipCells.push({ x: newX, y: newY });
       }
+    
 
       shipCells.forEach(({ x, y }) => {
         newGrid[x][y].hasShip = true;
@@ -112,7 +112,9 @@ export default function gameBoard({
 
       shipCells.forEach(({ x, y }) => markAdjacentCells(x, y));
 
-      changeSelectedShip(false);
+      setIsPicketShip(false);
+      changeSelectedShip(pickedShip.id) 
+    }
 
       return newGrid;
     });
@@ -140,7 +142,7 @@ export default function gameBoard({
                 onClick={() => placeShip(rowIndex, colIndex)}
                 className={`w-10 h-10 border border-gray-600 flex items-center justify-center
                   ${
-                    isSelected
+                    isPicketShip
                       ? cell.isHelpView
                         ? 'bg-blue-500'
                         : cell.isPlace

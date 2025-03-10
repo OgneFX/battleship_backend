@@ -1,52 +1,40 @@
-import {useState, useEffect} from 'react'
-import GameBoard from '../GameBoard/GameBoard'
+import { useEffect } from 'react'
+import { GameBoard } from '../GameBoard/GameBoard'
 import { ButtonShip } from '../ButtonShip/ButtonShip'
-import {ships} from '../../data/mock_ships'
+import { ships } from '../../data/mock_ships'
+import { useShipStore } from '../../store/ShipStore'
 
 export default function game() {
 
-  const[size, setSize] = useState(0)
-  const[direction, setDirection] = useState("horizontal")
-  const[onSelected, setSelected] = useState(false)
-  const[shipId, setShipId] = useState(0)
-
-  const shipInfo = (id: number, size: number, direction: string, isSelected:boolean) => {
-    setShipId(id)
-    setSize(size)
-    setDirection(direction)
-    setSelected(isSelected)
-  }
-
-  const changeSelectedShip = (selected: boolean) => {
-    setSelected(selected)
+  const { isPicketShip, pickedShip, setPicketShip } = useShipStore(state => state)
+  const changeSelectedShip = (shipId: number) => {
     ships.map(item => {
       if(item.id === shipId)
-      return item.isPlaces = !selected
+      return item.isPlaces = true
     })
-      // console.log(ships)
+      
     }
 
   useEffect(() => {
-        const handlerKeyPress = (e: KeyboardEvent) => {
+    const handlerKeyPress = (e: KeyboardEvent) => {
             
-            if(onSelected === true && e.key.toLowerCase() === "r") {
-                setDirection((prev) => prev === "horizontal" ? "vertical" : "horizontal" )
-                console.log(onSelected, direction)
-            }
-            
-        };
-
-        window.addEventListener("keydown", handlerKeyPress);
-    
-        return () => {
-          window.removeEventListener("keydown", handlerKeyPress);
-        };
-      }, [onSelected]);
+      if(isPicketShip && e.key.toLowerCase() === 'r' && 'к' && pickedShip) {
+        setPicketShip({ 
+          ...pickedShip, 
+          direction: pickedShip.direction === 'horizontal' ? 'vertical' : 'horizontal'
+        })              
+      }        
+    };
+    window.addEventListener("keydown", handlerKeyPress);
+      return () => {
+        window.removeEventListener("keydown", handlerKeyPress);
+      };
+  }, [isPicketShip, pickedShip, setPicketShip]);
 
   return (
     <div>
-        <ButtonShip shipInfo={shipInfo}/>
-        <GameBoard size={size} direction={direction} isSelected={onSelected} changeSelectedShip={changeSelectedShip}/>
+        <ButtonShip/>
+        <GameBoard changeSelectedShip={changeSelectedShip}/>
     </div>
   )
 }
