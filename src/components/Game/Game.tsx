@@ -3,6 +3,8 @@ import { GameBoard } from '../GameBoard/GameBoard'
 import { ButtonShip } from '../ButtonShip/ButtonShip'
 import { ships } from '../../data/mock_ships'
 import { useShipStore } from '../../store/ShipStore'
+import { EnemyGameBoard } from '../EnemyGameBoard/EnemyGameBoard'
+import Test from '../testbut/test'
 
 export default function game() {
 
@@ -11,9 +13,16 @@ export default function game() {
     ships.map(item => {
       if(item.id === shipId)
       return item.isPlaces = true
-    })
-      
+    })     
+    if(ships.every((ship) =>ship.isPlaces === true)) {
+      console.log(123)
+
     }
+  }
+
+  const placement = () => {
+    
+  }
 
   useEffect(() => {
     const handlerKeyPress = (e: KeyboardEvent) => {
@@ -32,9 +41,12 @@ export default function game() {
   }, [isPicketShip, pickedShip, setPicketShip]);
 
   return (
-    <div>
-        <ButtonShip/>
-        <GameBoard changeSelectedShip={changeSelectedShip}/>
+    <div className='flex'>
+      <h1>Расстановка</h1>
+      <ButtonShip/>
+      <GameBoard changeSelectedShip={changeSelectedShip}/>
+      <EnemyGameBoard/>
+      <Test/>
     </div>
   )
 }

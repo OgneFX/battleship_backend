@@ -1,4 +1,4 @@
-import { IShip } from "../interfaces/Ship"
+import { IShip } from "../interfaces/interfaces"
 
  export const ships: IShip[] = [
     {id: 1, size: 4, direction: "horizontal", position: [], isPlaces: false},

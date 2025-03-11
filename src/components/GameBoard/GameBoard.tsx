@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { useShipStore } from '../../store/ShipStore'; 
+import { GRID_SIZE } from '../../data/conatants';
+
 
 type gameBoardProps = {
   changeSelectedShip: (selected: number) => void
 }
 
-const GRID_SIZE = 10;
+
 const makeGrid = () => {
   return Array.from({ length: GRID_SIZE }, () =>
     Array.from({ length: GRID_SIZE }, () => ({
@@ -121,26 +123,28 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
   };
 
   return (
-    <div className="flex">
-      <div className="grid grid-cols-11 gap-1 p-4 w-fit">
-        <div></div>
-        {letter}
+    <div className="flex justify-center p-4">
+      <div className="grid grid-cols-11 gap-2 w-fit">
+        <div className="w-10"></div> 
+        {letter.map((char, index) => (
+          <div key={`letter-${index}`} className="flex items-center justify-center w-10 h-10 font-bold">
+            {char}
+          </div>
+        ))}
+  
         {grid.map((row, rowIndex) => (
-          <>
-            <div
-              key={`num-${rowIndex}`}
-              className="flex items-center justify-center"
-            >
+          <Fragment key={rowIndex}>
+            <div className="flex items-center justify-center w-10 h-10 font-bold">
               {rowIndex + 1}
             </div>
-
+  
             {row.map((cell, colIndex) => (
               <div
                 key={`${rowIndex}-${colIndex}`}
                 onMouseEnter={() => checkPlaceForShip(rowIndex, colIndex)}
                 onMouseLeave={() => uncheckPlaceForShip()}
                 onClick={() => placeShip(rowIndex, colIndex)}
-                className={`w-10 h-10 border border-gray-600 flex items-center justify-center
+                className={`w-10 h-10 border border-gray-600 flex items-center justify-center transition-colors
                   ${
                     isPicketShip
                       ? cell.isHelpView
@@ -156,9 +160,10 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
                   }`}
               ></div>
             ))}
-          </>
+          </Fragment>
         ))}
       </div>
     </div>
   );
+  
 }

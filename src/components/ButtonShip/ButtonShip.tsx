@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { ships } from '../../data/mock_ships'
-import { IShip } from '../../interfaces/Ship';
+import { IShip } from '../../interfaces/interfaces';
 import { useShipStore } from '../../store/ShipStore';
 
 export function ButtonShip() {
@@ -26,11 +26,11 @@ export function ButtonShip() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2 p-4 border border-gray-400">
+    <div className='grid grid-cols-2 gap-2 p-4 border border-gray-400'>
       {ships.map((ship) => (
         <div
           key={ship.id}
-          className={`flex space-x-1 p-1 cursor-pointer transition-all ${
+          className={`flex space-x-1 p-1 cursor-pointer transition-all size-auto ${
             ship.isPlaces ? "pointer-events-none opacity-50" : ""}`
           }
           onClick={(e) => {

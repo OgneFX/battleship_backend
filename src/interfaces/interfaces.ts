@@ -7,3 +7,5 @@ export interface IShip {
   position?: number[];
   isPlaces: boolean;
 }
+
+export type Phase = 'placement' | 'battle' | 'gameOver';
