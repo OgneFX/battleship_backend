@@ -1,6 +1,7 @@
 import { useState, Fragment } from 'react';
 import { useShipStore } from '../../store/ShipStore'; 
 import { GRID_SIZE } from '../../data/conatants';
+import { useGameStore } from '../../store/GameStore';
 
 
 type gameBoardProps = {
@@ -22,6 +23,7 @@ const makeGrid = () => {
 export function GameBoard({changeSelectedShip}: gameBoardProps) {
   const [grid, setGrid] = useState(makeGrid());
   const { isPicketShip, pickedShip, setIsPicketShip} = useShipStore(state => state)
+  const { setGridSM } = useGameStore(state => state)
 
   const letter = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'].map(
     (item) =>
@@ -117,7 +119,7 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
       setIsPicketShip(false);
       changeSelectedShip(pickedShip.id) 
     }
-
+      setGridSM(newGrid)
       return newGrid;
     });
   };

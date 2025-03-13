@@ -4,32 +4,43 @@ const webSocketConnect = new WebSocket.Server({ port: 8080 });
 const players = [];
 
 webSocketConnect.on('connection', (ws) => {
-  if(players.length >=2) {
+ 
+  if(players.length >2) {
     ws.send(JSON.stringify({ type: 'error', message: 'Сервер полон!' }))
     ws.close();
     return;
   }
 
-  players.push(ws)
-  ws.send(JSON.stringify({ type: "info", message: "Вы подключены к серверу!" }));
-
-  if (players.length === 2) {
-    players.forEach((player, index) => {
-        player.send(JSON.stringify({ type: "gameStart", message: `Игра начинается! Вы - Игрок ${index + 1}` }));
-    });
-  }
+  
   ws.on('message', (message) => {
-        console.log(`Получено сообщение: ${message}`);
-        players.forEach(player => {
-            if (player !== ws) {
-                player.send(message);
-            }
-        });
-    });
+    const data = JSON.parse(message);
+    if(data.type === 'sendGrid') {
+      if (!players.find((player) => player.ws === ws)) {
+        players.push({ ws, grid: data.grid });
+      }
+    }
+
+    if(players.length === 2) {
+      players[0].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: players[1].grid, gameState: 'battle'}))
+      players[1].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: players[0].grid, gameState: 'battle'}))
+    }
+
+
+
+  })
+  
+  // ws.on('message', (message) => {
+  //       console.log(`Получено сообщение: ${message}`);
+  //       players.forEach(player => {
+  //           if (player !== ws) {
+  //               player.send(message);
+  //           }
+  //       });
+  //   });
 
     ws.on('close', () => {
-        console.log("Игрок отключился");
-        players.filter(player => player !== ws);
+        players = [];
+        console.log(`Игрок отключился ${players}`);
     });
 
 

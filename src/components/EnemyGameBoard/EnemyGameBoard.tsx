@@ -1,19 +1,12 @@
-import { useState, Fragment } from 'react';
-import { GRID_SIZE } from '../../data/conatants';
+import { Fragment } from 'react';
+import { useGameStore } from "../../store/GameStore.ts";
 
-const makeGrid = () => {
-  return Array.from({ length: GRID_SIZE }, () =>
-    Array.from({ length: GRID_SIZE }, () => ({
-      hasShip: false,
-      hit: false,
-      isHelpView: false,
-      
-    }))
-  );
-};
+
+
 
 export function EnemyGameBoard() {
-  const [grid, setGrid] = useState(makeGrid());
+  const {enemyGrid} = useGameStore(state => state)
+  
 
   const letter = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'].map(
     (item) =>
@@ -21,6 +14,10 @@ export function EnemyGameBoard() {
       {item}
     </div>
   );
+
+  const checkCoeChto = (x: number, y: number) => {
+    console.log(enemyGrid[x][y])
+  }
 
   return (
     <div className="flex justify-center p-4">
@@ -33,7 +30,7 @@ export function EnemyGameBoard() {
               </div>
             ))}
       
-            {grid.map((row, rowIndex) => (
+            {enemyGrid.map((row, rowIndex) => (
               <Fragment key={rowIndex}>
                 
                 <div className="flex items-center justify-center w-10 h-10 font-bold">
@@ -44,7 +41,7 @@ export function EnemyGameBoard() {
                 {row.map((cell, colIndex) => (
                   <div
                     key={`${rowIndex}-${colIndex}`}
-                    // onMouseEnter={() => }
+                     onMouseEnter={() => checkCoeChto(rowIndex, colIndex)}
                     // onMouseLeave={() => }
                     // onClick={() => }
                     className={`w-10 h-10 border border-gray-600 flex items-center justify-center transition-colors bg-gray-200`}

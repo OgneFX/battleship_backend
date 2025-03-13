@@ -8,4 +8,13 @@ export interface IShip {
   isPlaces: boolean;
 }
 
-export type Phase = 'placement' | 'battle' | 'gameOver';
+export interface gridCell {
+  hasShip: boolean;
+  hit: boolean;
+  isHelpView: boolean;
+  isPlace: boolean;
+}
+
+export type Grid = gridCell[][]
+
+export type Phase = 'placement' | 'battle' | 'gameOver' | null;

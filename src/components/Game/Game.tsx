@@ -5,24 +5,24 @@ import { ships } from '../../data/mock_ships'
 import { useShipStore } from '../../store/ShipStore'
 import { EnemyGameBoard } from '../EnemyGameBoard/EnemyGameBoard'
 import Test from '../testbut/test'
+import { useGameStore } from "../../store/GameStore.ts";
 
 export default function game() {
 
   const { isPicketShip, pickedShip, setPicketShip } = useShipStore(state => state)
+  const {setGamePhase, gamePhase} = useGameStore(state => state)
   const changeSelectedShip = (shipId: number) => {
     ships.map(item => {
       if(item.id === shipId)
       return item.isPlaces = true
     })     
     if(ships.every((ship) =>ship.isPlaces === true)) {
-      console.log(123)
+      setGamePhase('placement')
+      console.log(gamePhase)
 
     }
   }
 
-  const placement = () => {
-    
-  }
 
   useEffect(() => {
     const handlerKeyPress = (e: KeyboardEvent) => {
