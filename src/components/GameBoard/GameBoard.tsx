@@ -67,7 +67,7 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
       const newGrid = prevGrid.map((row) => row.map((cell) => ({ ...cell })));
 
       const shipCells: { x: number; y: number }[] = [];
-
+      
       if(pickedShip) {
       for (let i = 0; i < pickedShip.size; i++) {
         const newX = pickedShip.direction === 'vertical' ? x + i : x;

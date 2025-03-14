@@ -20,6 +20,8 @@ interface GameStore {
   setGridSM: (grid: Grid) => void
   enemyGrid: Grid,
   setEnemyGrid: (enemyGrid: Grid) => void
+  turn: boolean,
+  setTurn: (turn: boolean) => void
 }
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -36,6 +38,11 @@ export const useGameStore = create<GameStore>((set) => ({
   enemyGrid: makeGrid(),
   setEnemyGrid: (enemyGrid: Grid) => {
     set({ enemyGrid })
+  },
+
+  turn: false,
+  setTurn: (turn) => {
+    set ({ turn })
   }
   
 }))

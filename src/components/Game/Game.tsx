@@ -4,7 +4,7 @@ import { ButtonShip } from '../ButtonShip/ButtonShip'
 import { ships } from '../../data/mock_ships'
 import { useShipStore } from '../../store/ShipStore'
 import { EnemyGameBoard } from '../EnemyGameBoard/EnemyGameBoard'
-import Test from '../testbut/test'
+import ConnectButton from '../ConnectButton/ConnectButton.tsx'
 import { useGameStore } from "../../store/GameStore.ts";
 
 export default function game() {
@@ -19,10 +19,8 @@ export default function game() {
     if(ships.every((ship) =>ship.isPlaces === true)) {
       setGamePhase('placement')
       console.log(gamePhase)
-
     }
   }
-
 
   useEffect(() => {
     const handlerKeyPress = (e: KeyboardEvent) => {
@@ -46,7 +44,7 @@ export default function game() {
       <ButtonShip/>
       <GameBoard changeSelectedShip={changeSelectedShip}/>
       <EnemyGameBoard/>
-      <Test/>
+      <ConnectButton/>
     </div>
   )
 }

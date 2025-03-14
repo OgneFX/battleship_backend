@@ -5,7 +5,7 @@ import { useGameStore } from "../../store/GameStore.ts";
 
 
 export function EnemyGameBoard() {
-  const {enemyGrid} = useGameStore(state => state)
+  const { enemyGrid, setEnemyGrid, turn } = useGameStore(state => state)
   
 
   const letter = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'].map(
@@ -15,8 +15,31 @@ export function EnemyGameBoard() {
     </div>
   );
 
-  const checkCoeChto = (x: number, y: number) => {
+  const checkForShoot = (x: number, y: number) => {
     console.log(enemyGrid[x][y])
+    const newGrid = enemyGrid
+    newGrid.map((row) => row.map((cell) => cell.isHelpView = false))
+    if(turn){
+      newGrid[x][y].isHelpView = true;
+    }
+    setEnemyGrid(newGrid)
+  }
+
+  const unCheckForShoot = () => {
+    const newGrid = enemyGrid
+    newGrid.map((row) => row.map((cell) => cell.isHelpView = false))
+    setEnemyGrid(newGrid)
+  }
+
+  const onShoot = (x: number, y: number) => {
+    if(turn && !enemyGrid[x][y].hit) {
+      const newGrid = enemyGrid
+      
+      newGrid[x][y].hit = true;
+      setEnemyGrid(newGrid)
+    }
+    
+    
   }
 
   return (
@@ -41,11 +64,16 @@ export function EnemyGameBoard() {
                 {row.map((cell, colIndex) => (
                   <div
                     key={`${rowIndex}-${colIndex}`}
-                     onMouseEnter={() => checkCoeChto(rowIndex, colIndex)}
-                    // onMouseLeave={() => }
-                    // onClick={() => }
-                    className={`w-10 h-10 border border-gray-600 flex items-center justify-center transition-colors bg-gray-200`}
-                  ></div>
+                     onMouseEnter={() => checkForShoot(rowIndex, colIndex)}
+                     onMouseLeave={() => unCheckForShoot()}
+                     onClick={() => onShoot(rowIndex, colIndex)}
+                    className={`w-10 h-10 border border-gray-600 flex items-center justify-center transition-colors bg-gray-200
+                       ${cell.isHelpView ? 'bg-red-500' : ''}
+                       ${cell.hit ? (cell.hasShip ? 'bg-blue-500' : 'bg-red-200') : 'bg-gray-200'}`
+                      }                     
+                  >
+                    {cell.hit && (cell.hasShip ? <span className="text-black font-bold">X</span> : <span className="text-black font-bold">•</span>)}
+                  </div>
                 ))}
               </Fragment>
             ))}
