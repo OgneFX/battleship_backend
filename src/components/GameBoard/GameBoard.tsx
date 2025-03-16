@@ -20,6 +20,8 @@ const makeGrid = () => {
   );
 };
 
+//Изменить этот компонент
+
 export function GameBoard({changeSelectedShip}: gameBoardProps) {
   const [grid, setGrid] = useState(makeGrid());
   const { isPicketShip, pickedShip, setIsPicketShip} = useShipStore(state => state)
