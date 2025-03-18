@@ -30,7 +30,7 @@ export const useGameStore = create<GameStore>((set) => ({
     set ({ gamePhase })
   },
 
-  grid: [],
+  grid: makeGrid(),
   setGridSM: (grid: Grid) => {
     set({ grid })
   },

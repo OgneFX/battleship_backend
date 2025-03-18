@@ -14,6 +14,7 @@ ws.on('message', (message) => {
   if(data.type === 'sendGrid') {
     if (!players.find((player) => player.ws === ws)) {
       players.push({ ws, grid: data.grid });
+      console.log('yoy')
     }
     if(players.length === 2) {
       players[0].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: players[1].grid, gameState: 'battle', turn: true}))
@@ -22,13 +23,17 @@ ws.on('message', (message) => {
   }
 
   if(data.type === 'shoot') {
-    const paalev = players.find(player => player.ws !== ws)
-    if(paalev) {
-      paalev.ws.send(JSON.stringify({ type: 'shoot', grid: data.grid }))
-    }
-  }
+     const enemyPlayer = players.find(player => player.ws !== ws)
 
-  
+     console.log(enemyPlayer.ws == players[1].ws)
+    console.log(`${data.x}, ${data.y}`)
+    players[1].ws.send(JSON.stringify({ type: 'shoot' }))
+
+    // if(paalev) {
+    //   
+    //   console.log(`${x}, ${y}`)
+    // }
+  }
 
 
 })

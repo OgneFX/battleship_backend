@@ -1,12 +1,13 @@
-import {useState} from "react";
+import { useRef, useEffect } from "react";
 import { useGameStore } from "../store/GameStore.ts";
 
 export function useWebSocket() {
-  const [socket, setSocket] = useState<WebSocket | null>(null)
+  const socketRef = useRef<WebSocket | null>(null);
   const { gamePhase, setGamePhase, grid, setEnemyGrid, enemyGrid, setTurn } = useGameStore(state => state)
 
-  const connectSocket = () => {
-    if(!socket && gamePhase == 'placement') {
+  useEffect(() => {
+  // const connectSocket = () => {
+    if(!socketRef.current && gamePhase == 'placement') {
       const newSocket = new WebSocket('ws://localhost:8080');
       newSocket.onopen = () => {
         newSocket.send(JSON.stringify({ type: 'sendGrid', grid}))
@@ -21,22 +22,33 @@ export function useWebSocket() {
       }
       newSocket.onclose = () => console.log('Отключение от сервера');
       newSocket.onerror = (error) => console.log('Ошибка' + error);
-      setSocket(newSocket);    
+      
+      socketRef.current = newSocket; 
+      console.log(newSocket)   
+      console.log(socketRef.current) 
     }
-  };
+  // };
+}, [gamePhase])
 
-  const pushShoot = () => {
-      if(socket) {
-        socket.send(JSON.stringify({ type: 'shoot', enemyGrid }))
-        socket.onmessage = (message) => {
+  const pushShoot = (x: number, y:number) => {
+    console.log(socketRef.current)
+    console.log('shhot out')
+      if(socketRef.current) {
+        console.log('shhot in')
+
+        socketRef.current.send(JSON.stringify({ type: 'shoot', x, y }))
+        socketRef.current.onmessage = (message) => {
           const data = JSON.parse(message.data)
-          if(data.type === 'shoot'){
-            
-          }
+          // if(data.type === 'shoot'){
+            console.log('data is come')
+            // console.log(data.x)
+            // console.log(data.y)
+
+          // }
 
         }
       }
   }
 
-  return {connectSocket, pushShoot}
+  return { pushShoot }
 }

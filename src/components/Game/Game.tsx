@@ -10,7 +10,7 @@ import { useGameStore } from "../../store/GameStore.ts";
 export default function game() {
 
   const { isPicketShip, pickedShip, setPicketShip } = useShipStore(state => state)
-  const {setGamePhase, gamePhase} = useGameStore(state => state)
+  const {setGamePhase} = useGameStore(state => state)
   const changeSelectedShip = (shipId: number) => {
     ships.map(item => {
       if(item.id === shipId)
@@ -18,7 +18,7 @@ export default function game() {
     })     
     if(ships.every((ship) =>ship.isPlaces === true)) {
       setGamePhase('placement')
-      console.log(gamePhase)
+      
     }
   }
 

@@ -1,13 +1,15 @@
 import { Fragment } from 'react';
-import { useGameStore } from "../../store/GameStore.ts";
+import { useGameStore } from '../../store/GameStore.ts';
+import { useWebSocket } from '../../utils/socket.ts'
 
 
 
 
 export function EnemyGameBoard() {
   const { enemyGrid, setEnemyGrid, turn } = useGameStore(state => state)
-  
+  const { pushShoot } = useWebSocket();
 
+  
   const letter = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'].map(
     (item) =>
      <div key={`${item}-letterSymbol`}>
@@ -16,7 +18,7 @@ export function EnemyGameBoard() {
   );
 
   const checkForShoot = (x: number, y: number) => {
-    console.log(enemyGrid[x][y])
+    // console.log(enemyGrid[x][y])
     const newGrid = enemyGrid
     newGrid.map((row) => row.map((cell) => cell.isHelpView = false))
     if(turn){
@@ -33,8 +35,9 @@ export function EnemyGameBoard() {
 
   const onShoot = (x: number, y: number) => {
     if(turn && !enemyGrid[x][y].hit) {
+      console.log('in enemy grid')
       const newGrid = enemyGrid
-      
+      pushShoot(x, y)
       newGrid[x][y].hit = true;
       setEnemyGrid(newGrid)
     }
