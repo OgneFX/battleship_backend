@@ -3,10 +3,9 @@ import { useGameStore } from "../store/GameStore.ts";
 
 export function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
-  const { gamePhase, setGamePhase, grid, setEnemyGrid, enemyGrid, setTurn } = useGameStore(state => state)
+  const { gamePhase, setGamePhase, grid, setEnemyGrid, enemyGrid, setTurn, turn } = useGameStore(state => state)
 
   useEffect(() => {
-  // const connectSocket = () => {
     if(!socketRef.current && gamePhase == 'placement') {
       const newSocket = new WebSocket('ws://localhost:8080');
       newSocket.onopen = () => {
@@ -15,36 +14,36 @@ export function useWebSocket() {
       }
       newSocket.onmessage = (event) => {
         const data = JSON.parse(event.data)
-        setGamePhase(data.gameState)
-        setEnemyGrid(data.enemyBoard)
-        setTurn(data.turn)  
-        console.log('Получено сообщение c сервера');
+        if(data.type === 'startBattle') {
+          setGamePhase(data.gameState)
+          setEnemyGrid(data.enemyBoard)
+          setTurn(data.turn)  
+        }
+          console.log('Получено сообщение c сервера');
+          console.log(gamePhase)
+          console.log(turn)
+     
       }
       newSocket.onclose = () => console.log('Отключение от сервера');
       newSocket.onerror = (error) => console.log('Ошибка' + error);
       
       socketRef.current = newSocket; 
-      console.log(newSocket)   
-      console.log(socketRef.current) 
+      
     }
-  // };
 }, [gamePhase])
 
   const pushShoot = (x: number, y:number) => {
-    console.log(socketRef.current)
-    console.log('shhot out')
+      console.log(gamePhase)
       if(socketRef.current) {
-        console.log('shhot in')
-
+        
         socketRef.current.send(JSON.stringify({ type: 'shoot', x, y }))
         socketRef.current.onmessage = (message) => {
           const data = JSON.parse(message.data)
-          // if(data.type === 'shoot'){
+          if(data.type === 'shoot') {
             console.log('data is come')
-            // console.log(data.x)
-            // console.log(data.y)
-
-          // }
+            console.log(data.x)
+            console.log(data.y)
+          }
 
         }
       }

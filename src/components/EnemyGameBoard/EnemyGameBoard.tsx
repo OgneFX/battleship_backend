@@ -35,7 +35,6 @@ export function EnemyGameBoard() {
 
   const onShoot = (x: number, y: number) => {
     if(turn && !enemyGrid[x][y].hit) {
-      console.log('in enemy grid')
       const newGrid = enemyGrid
       pushShoot(x, y)
       newGrid[x][y].hit = true;

@@ -25,9 +25,9 @@ ws.on('message', (message) => {
   if(data.type === 'shoot') {
      const enemyPlayer = players.find(player => player.ws !== ws)
 
-     console.log(enemyPlayer.ws == players[1].ws)
+     
     console.log(`${data.x}, ${data.y}`)
-    players[1].ws.send(JSON.stringify({ type: 'shoot' }))
+    players[0].ws.send(JSON.stringify({ type: 'shoot'}))
 
     // if(paalev) {
     //   
