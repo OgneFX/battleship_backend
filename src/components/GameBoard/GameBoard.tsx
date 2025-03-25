@@ -1,6 +1,5 @@
-import { useState, Fragment } from 'react';
+import { Fragment } from 'react';
 import { useShipStore } from '../../store/ShipStore'; 
-import { GRID_SIZE } from '../../data/conatants';
 import { useGameStore } from '../../store/GameStore';
 
 
@@ -9,23 +8,10 @@ type gameBoardProps = {
 }
 
 
-const makeGrid = () => {
-  return Array.from({ length: GRID_SIZE }, () =>
-    Array.from({ length: GRID_SIZE }, () => ({
-      hasShip: false,
-      hit: false,
-      isHelpView: false,
-      isPlace: true,
-    }))
-  );
-};
-
-//Изменить этот компонент
-
 export function GameBoard({changeSelectedShip}: gameBoardProps) {
-  const [grid, setGrid] = useState(makeGrid());
-  const { isPicketShip, pickedShip, setIsPicketShip} = useShipStore(state => state)
-  const { setGridSM } = useGameStore(state => state)
+  
+  const { isPicketShip, pickedShip, setIsPicketShip } = useShipStore(state => state)
+  const { setGridSM, grid } = useGameStore(state => state)
 
   const letter = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'].map(
     (item) =>
@@ -35,10 +21,9 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
   );
 
   const checkPlaceForShip = (x: number, y: number) => {
-    
     if (!isPicketShip) return;
-    setGrid((prevGrid) => {
-      const newGrid = prevGrid.map((row) =>
+     
+      const newGrid = grid.map((row) =>
         row.map((cell) => ({ ...cell, isHelpView: false }))
       );
 
@@ -52,21 +37,19 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
         }
       }
 
-      return newGrid;
-    });
-  }
+      setGridSM(newGrid)
+  };
+  
 
   const uncheckPlaceForShip = () => {
-    setGrid((prevGrid) =>
-      prevGrid.map((row) => row.map((cell) => ({ ...cell, isHelpView: false })))
-    );
+    const newGrid = grid.map((row) => row.map((cell) => ({ ...cell, isHelpView: false })));
+    setGridSM(newGrid)
   };
 
   const placeShip = (x: number, y: number) => {
     if (!isPicketShip) return;
 
-    setGrid((prevGrid) => {
-      const newGrid = prevGrid.map((row) => row.map((cell) => ({ ...cell })));
+    const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
 
       const shipCells: { x: number; y: number }[] = [];
       
@@ -81,7 +64,7 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
           !newGrid[newX][newY].isHelpView ||
           newGrid[newX][newY].isPlace === false
         ) {
-          return prevGrid;
+          return grid;
         }
 
         shipCells.push({ x: newX, y: newY });
@@ -122,9 +105,9 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
       changeSelectedShip(pickedShip.id) 
     }
       setGridSM(newGrid)
-      return newGrid;
-    });
+     
   };
+
 
   return (
     <div className="flex justify-center p-4">
@@ -149,20 +132,26 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
                 onMouseLeave={() => uncheckPlaceForShip()}
                 onClick={() => placeShip(rowIndex, colIndex)}
                 className={`w-10 h-10 border border-gray-600 flex items-center justify-center transition-colors
+                  
                   ${
-                    isPicketShip
-                      ? cell.isHelpView
-                        ? 'bg-blue-500'
-                        : cell.isPlace
-                          ? 'bg-green-200'
-                          : cell.hasShip
-                            ? 'bg-blue-500'
-                            : 'bg-red-200'
-                      : cell.hasShip
-                        ? 'bg-blue-500'
-                        : 'bg-gray-200'
-                  }`}
-              ></div>
+                    cell.hit 
+                      ? cell.hasShip 
+                        ? 'bg-blue-500' 
+                        : 'bg-red-200' 
+                      : isPicketShip
+                        ? cell.isHelpView
+                          ? 'bg-blue-500'
+                          : cell.isPlace
+                            ? 'bg-green-200'
+                            : cell.hasShip
+                              ? 'bg-blue-500'
+                              : 'bg-red-200'
+                        : cell.hasShip
+                          ? 'bg-blue-500'
+                          : 'bg-gray-200'
+                  }
+                  `}
+              > {cell.hit && (cell.hasShip ? <span className="text-black font-bold">X</span> : <span className="text-black font-bold">•</span>)}</div>
             ))}
           </Fragment>
         ))}

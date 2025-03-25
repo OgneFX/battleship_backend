@@ -17,11 +17,14 @@ interface GameStore {
   gamePhase: Phase,
   setGamePhase: (gamePhase: Phase) => void,
   grid: Grid,
-  setGridSM: (grid: Grid) => void
+  // makeGrid: () => Grid;
+  setGridSM: (grid: Grid) => void,
   enemyGrid: Grid,
-  setEnemyGrid: (enemyGrid: Grid) => void
+  setEnemyGrid: (enemyGrid: Grid) => void,
   turn: boolean,
-  setTurn: (turn: boolean) => void
+  setTurn: (turn: boolean) => void,
+  winner: boolean,
+  setWinner: (winner: boolean) => void,
 }
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -29,6 +32,8 @@ export const useGameStore = create<GameStore>((set) => ({
   setGamePhase: (gamePhase :Phase) => {
     set ({ gamePhase })
   },
+
+  // makeGrid,
 
   grid: makeGrid(),
   setGridSM: (grid: Grid) => {
@@ -43,6 +48,11 @@ export const useGameStore = create<GameStore>((set) => ({
   turn: false,
   setTurn: (turn) => {
     set ({ turn })
+  },
+
+  winner: false,
+  setWinner: (winner) => {
+    set ({ winner })
   }
   
 }))

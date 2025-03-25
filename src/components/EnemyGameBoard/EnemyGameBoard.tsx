@@ -18,7 +18,7 @@ export function EnemyGameBoard() {
   );
 
   const checkForShoot = (x: number, y: number) => {
-    // console.log(enemyGrid[x][y])
+    console.log(enemyGrid[x][y])
     const newGrid = enemyGrid
     newGrid.map((row) => row.map((cell) => cell.isHelpView = false))
     if(turn){

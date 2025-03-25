@@ -6,6 +6,7 @@ import { useShipStore } from '../../store/ShipStore'
 import { EnemyGameBoard } from '../EnemyGameBoard/EnemyGameBoard'
 import ConnectButton from '../ConnectButton/ConnectButton.tsx'
 import { useGameStore } from "../../store/GameStore.ts";
+import { GameOverModal } from '../GameOverModal/GameOverModal.tsx'
 
 export default function game() {
 
@@ -43,6 +44,7 @@ export default function game() {
       <h1>Расстановка</h1>
       <ButtonShip/>
       <GameBoard changeSelectedShip={changeSelectedShip}/>
+      <GameOverModal />
       <EnemyGameBoard/>
       <ConnectButton/>
     </div>

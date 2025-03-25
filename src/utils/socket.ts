@@ -3,14 +3,14 @@ import { useGameStore } from "../store/GameStore.ts";
 
 export function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
-  const { gamePhase, setGamePhase, grid, setEnemyGrid, enemyGrid, setTurn, turn } = useGameStore(state => state)
+  const { gamePhase, setGamePhase, grid, setGridSM, setEnemyGrid, enemyGrid, setTurn, setWinner } = useGameStore(state => state)
 
   useEffect(() => {
-    if(!socketRef.current && gamePhase == 'placement') {
+    if(!socketRef.current && gamePhase === 'placement') {
       const newSocket = new WebSocket('ws://localhost:8080');
       newSocket.onopen = () => {
-        newSocket.send(JSON.stringify({ type: 'sendGrid', grid}))
-        console.log('Тестовое подключение');
+        newSocket.send(JSON.stringify({ type: 'sendGrid', grid }))
+        console.log('Шляпа')
       }
       newSocket.onmessage = (event) => {
         const data = JSON.parse(event.data)
@@ -19,10 +19,23 @@ export function useWebSocket() {
           setEnemyGrid(data.enemyBoard)
           setTurn(data.turn)  
         }
-          console.log('Получено сообщение c сервера');
-          console.log(gamePhase)
-          console.log(turn)
-     
+
+        if(data.type === 'shoot') {
+          setTurn(data.turn)
+          const newGrid = grid
+          newGrid[data.x][data.y].hit = true
+          setGridSM(newGrid)
+        }
+
+        if(data.type === 'turn') {
+          setTurn(data.turn)
+        }
+
+        if(data.type === 'end') {
+          setTurn(data.turn)
+          setGamePhase(data.gameState)
+          setWinner(data.winner)
+        }
       }
       newSocket.onclose = () => console.log('Отключение от сервера');
       newSocket.onerror = (error) => console.log('Ошибка' + error);
@@ -33,21 +46,20 @@ export function useWebSocket() {
 }, [gamePhase])
 
   const pushShoot = (x: number, y:number) => {
-      console.log(gamePhase)
+      
       if(socketRef.current) {
-        
-        socketRef.current.send(JSON.stringify({ type: 'shoot', x, y }))
-        socketRef.current.onmessage = (message) => {
-          const data = JSON.parse(message.data)
-          if(data.type === 'shoot') {
-            console.log('data is come')
-            console.log(data.x)
-            console.log(data.y)
-          }
-
-        }
+        socketRef.current.send(JSON.stringify({ type: 'shoot', x, y, grid, enemyGrid }))
       }
   }
 
-  return { pushShoot }
+  const disconnectSocket = () => {
+    if(socketRef.current) {
+      socketRef.current.send(JSON.stringify({ type: "leaveGame" })); 
+      socketRef.current.close();
+      socketRef.current = null;
+      console.log('disconnect')
+    }
+  }
+
+  return { pushShoot, disconnectSocket }
 }
