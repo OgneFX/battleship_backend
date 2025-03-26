@@ -1,9 +1,14 @@
+import { FC } from 'react';
 import { useGameStore } from '../../store/GameStore.ts';
 import { useGameReset } from '../../utils/useGameReset.ts';
 
-export  function GameOverModal() {
+interface GameOverModalProps {
+  disconnectSocket: any,
+}
+
+export const GameOverModal: FC<GameOverModalProps> = ({disconnectSocket}) => {
   const { winner, gamePhase } = useGameStore();
-  const { resetGame } = useGameReset();
+  const { resetGame } = useGameReset(disconnectSocket);
   if (gamePhase !== 'gameOver') return null;
 
   return (

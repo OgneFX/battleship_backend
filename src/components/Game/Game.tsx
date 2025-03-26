@@ -7,11 +7,13 @@ import { EnemyGameBoard } from '../EnemyGameBoard/EnemyGameBoard'
 import ConnectButton from '../ConnectButton/ConnectButton.tsx'
 import { useGameStore } from "../../store/GameStore.ts";
 import { GameOverModal } from '../GameOverModal/GameOverModal.tsx'
+import { useWebSocket } from '../../utils/socket.ts'
 
-export default function game() {
-
+export default function Game() {
+  const { pushShoot, disconnectSocket } = useWebSocket();
   const { isPicketShip, pickedShip, setPicketShip } = useShipStore(state => state)
-  const {setGamePhase} = useGameStore(state => state)
+  const {setGamePhase, gamePhase} = useGameStore(state => state)
+
   const changeSelectedShip = (shipId: number) => {
     ships.map(item => {
       if(item.id === shipId)
@@ -19,10 +21,11 @@ export default function game() {
     })     
     if(ships.every((ship) =>ship.isPlaces === true)) {
       setGamePhase('placement')
+      console.log(gamePhase)
       
     }
   }
-
+  console.info('1')
   useEffect(() => {
     const handlerKeyPress = (e: KeyboardEvent) => {
             
@@ -43,9 +46,9 @@ export default function game() {
     <div className='flex'>
       <h1>Расстановка</h1>
       <ButtonShip/>
-      <GameBoard changeSelectedShip={changeSelectedShip}/>
-      <GameOverModal />
-      <EnemyGameBoard/>
+      <GameBoard changeSelectedShip = { changeSelectedShip }/>
+      <GameOverModal disconnectSocket = { disconnectSocket }/>
+      <EnemyGameBoard pushShoot = { pushShoot } />
       <ConnectButton/>
     </div>
   )

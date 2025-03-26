@@ -17,7 +17,7 @@ interface GameStore {
   gamePhase: Phase,
   setGamePhase: (gamePhase: Phase) => void,
   grid: Grid,
-  // makeGrid: () => Grid;
+  makeGrid: () => Grid;
   setGridSM: (grid: Grid) => void,
   enemyGrid: Grid,
   setEnemyGrid: (enemyGrid: Grid) => void,
@@ -33,7 +33,7 @@ export const useGameStore = create<GameStore>((set) => ({
     set ({ gamePhase })
   },
 
-  // makeGrid,
+  makeGrid,
 
   grid: makeGrid(),
   setGridSM: (grid: Grid) => {

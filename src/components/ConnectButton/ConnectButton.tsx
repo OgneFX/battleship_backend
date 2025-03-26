@@ -1,12 +1,14 @@
-import  { useWebSocket }  from "../../utils/socket.ts";
+import { useGameStore } from "../../store/GameStore.ts";
+
 
 function ConnectButton() {
-  // const { connectSocket } = useWebSocket();
+  
+  const { gamePhase} = useGameStore(state => state)
 
 
   return (
     <div >
-      { <button /*onClick={ connectSocket }*/>Подключение</button> }
+      { <button onClick={  ()=> console.log(gamePhase) }>Подключение</button> }
     </div>
   );
 }

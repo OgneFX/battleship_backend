@@ -1,13 +1,15 @@
-import { Fragment } from 'react';
+import { FC, Fragment, useCallback } from 'react';
 import { useGameStore } from '../../store/GameStore.ts';
-import { useWebSocket } from '../../utils/socket.ts'
 
 
+interface EnemyGameBoardProps {
+  pushShoot: any
+}
 
 
-export function EnemyGameBoard() {
+export const EnemyGameBoard: FC<EnemyGameBoardProps> = ({pushShoot}) => {
   const { enemyGrid, setEnemyGrid, turn } = useGameStore(state => state)
-  const { pushShoot } = useWebSocket();
+  
 
   
   const letter = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'].map(
@@ -17,7 +19,7 @@ export function EnemyGameBoard() {
     </div>
   );
 
-  const checkForShoot = (x: number, y: number) => {
+  const checkForShoot = useCallback((x: number, y: number) => {
     console.log(enemyGrid[x][y])
     const newGrid = enemyGrid
     newGrid.map((row) => row.map((cell) => cell.isHelpView = false))
@@ -25,16 +27,17 @@ export function EnemyGameBoard() {
       newGrid[x][y].isHelpView = true;
     }
     setEnemyGrid(newGrid)
-  }
+  },[enemyGrid])
 
-  const unCheckForShoot = () => {
+  const unCheckForShoot = useCallback(() => {
     const newGrid = enemyGrid
     newGrid.map((row) => row.map((cell) => cell.isHelpView = false))
     setEnemyGrid(newGrid)
-  }
+  }, [enemyGrid])
 
   const onShoot = (x: number, y: number) => {
     if(turn && !enemyGrid[x][y].hit) {
+      console.log('Нажатие кнопки')
       const newGrid = enemyGrid
       pushShoot(x, y)
       newGrid[x][y].hit = true;
@@ -67,7 +70,7 @@ export function EnemyGameBoard() {
                   <div
                     key={`${rowIndex}-${colIndex}`}
                      onMouseEnter={() => checkForShoot(rowIndex, colIndex)}
-                     onMouseLeave={() => unCheckForShoot()}
+                     onMouseLeave={unCheckForShoot}
                      onClick={() => onShoot(rowIndex, colIndex)}
                     className={`w-10 h-10 border border-gray-600 flex items-center justify-center transition-colors bg-gray-200
                        ${cell.isHelpView ? 'bg-red-500' : ''}
