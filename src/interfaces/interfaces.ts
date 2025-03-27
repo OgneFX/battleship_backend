@@ -15,6 +15,10 @@ export interface gridCell {
   isPlace: boolean;
 }
 
+export interface useGameResetProps {
+  disconnectSocket: () => void
+}
+
 export type Grid = gridCell[][]
 
 export type Phase = 'placement' | 'battle' | 'gameOver' | null;

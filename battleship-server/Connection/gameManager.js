@@ -6,7 +6,6 @@ if(players.length >2) {
   return;
 }
 
-
 ws.on('message', (message) => {
   const data = JSON.parse(message);
 
@@ -16,10 +15,8 @@ ws.on('message', (message) => {
       console.log('yoy')
     }
     if(players.length === 2) {
-      players[0].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: players[1].grid, gameState: 'battle', turn: true }))
-      players[1].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: players[0].grid, gameState: 'battle', turn: false }))
-      console.log('yoyaa')
-      console.log(players.length)
+      players[0].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: players[1].grid, gameState: 'battle', textPhase: 'Бой', turn: true }))
+      players[1].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: players[0].grid, gameState: 'battle', textPhase: 'Бой',turn: false }))
     }    
   }
 
@@ -44,11 +41,11 @@ ws.on('message', (message) => {
 
     if(enemyShipsCount > 0 && itsMyShipsCount > 0) {
       if(enemyPlayer.grid[data.x][data.y].hasShip) {
-        enemyPlayer.ws.send(JSON.stringify({ type: 'shoot', turn: false, x: data.x, y: data.y }))
+        enemyPlayer.ws.send(JSON.stringify({ type: 'shoot', turn: false, textPhase: 'Ход противника', x: data.x, y: data.y }))
       }
       else {
-        itsMe.ws.send(JSON.stringify({ type: 'turn', turn: false }))
-        enemyPlayer.ws.send(JSON.stringify({ type: 'shoot', turn: true, x: data.x, y: data.y }))
+        itsMe.ws.send(JSON.stringify({ type: 'turn', turn: false, textPhase: 'Ход противника' }))
+        enemyPlayer.ws.send(JSON.stringify({ type: 'shoot', turn: true, textPhase: 'Ваш ход', x: data.x, y: data.y }))
       } 
     }
     else if(itsMyShipsCount > 0) {
@@ -59,16 +56,13 @@ ws.on('message', (message) => {
       itsMe.ws.send(JSON.stringify({ type: 'end', turn: false, gameState: 'gameOver', winner: false }))
         enemyPlayer.ws.send(JSON.stringify({ type: 'end', turn: false, gameState: 'gameOver', winner: true }))
     }
-    
   }
   
   if (data.type === "leaveGame") {
     players = players.filter(player => player.ws !== ws);
     console.log("Игрок отключился");
   }
-
-  })
-
+})
 
   ws.on('close', () => {
     players = players.filter(player => player.ws !== ws);

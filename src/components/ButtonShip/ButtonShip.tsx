@@ -5,7 +5,6 @@ import { useShipStore } from '../../store/ShipStore';
 
 export function ButtonShip() {
   const { pickedShip, setPicketShip, setIsPicketShip} = useShipStore(state => state)
-
   const handleClickOutside = () => {
     setPicketShip({ id: 0, size: 0, direction: 'horizontal', isPlaces: false });
     setIsPicketShip(false)

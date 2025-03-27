@@ -2,17 +2,13 @@ import { Fragment } from 'react';
 import { useShipStore } from '../../store/ShipStore'; 
 import { useGameStore } from '../../store/GameStore';
 
-
 type gameBoardProps = {
   changeSelectedShip: (selected: number) => void
 }
 
-
 export function GameBoard({changeSelectedShip}: gameBoardProps) {
-  
   const { isPicketShip, pickedShip, setIsPicketShip } = useShipStore(state => state)
   const { setGridSM, grid } = useGameStore(state => state)
-
   const letter = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'].map(
     (item) =>
      <div key={`${item}-letterSymbol`}>
@@ -36,10 +32,8 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
           newGrid[x + i][y].isHelpView = true;
         }
       }
-
       setGridSM(newGrid)
   };
-  
 
   const uncheckPlaceForShip = () => {
     const newGrid = grid.map((row) => row.map((cell) => ({ ...cell, isHelpView: false })));
@@ -50,14 +44,11 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
     if (!isPicketShip) return;
 
     const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
-
       const shipCells: { x: number; y: number }[] = [];
-      
       if(pickedShip) {
       for (let i = 0; i < pickedShip.size; i++) {
         const newX = pickedShip.direction === 'vertical' ? x + i : x;
         const newY = pickedShip.direction === 'horizontal' ? y + i : y;
-
         if (
           newX >= 10 ||
           newY >= 10 ||
@@ -66,10 +57,8 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
         ) {
           return grid;
         }
-
         shipCells.push({ x: newX, y: newY });
       }
-    
 
       shipCells.forEach(({ x, y }) => {
         newGrid[x][y].hasShip = true;
@@ -92,7 +81,6 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
         directions.forEach(([dx, dy]) => {
           const newX = x + dx;
           const newY = y + dy;
-
           if (newX >= 0 && newX < 10 && newY >= 0 && newY < 10) {
             newGrid[newX][newY].isPlace = false;
           }
@@ -104,8 +92,7 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
       setIsPicketShip(false);
       changeSelectedShip(pickedShip.id) 
     }
-      setGridSM(newGrid)
-     
+      setGridSM(newGrid)  
   };
 
 

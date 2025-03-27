@@ -19,7 +19,4 @@ export const useShipStore = create<ShipStore>((set) => ({
   setIsPicketShip: (isPicketShip) => {
     set({ isPicketShip })
   },
-
- 
-
 }))

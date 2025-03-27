@@ -25,6 +25,8 @@ interface GameStore {
   setTurn: (turn: boolean) => void,
   winner: boolean,
   setWinner: (winner: boolean) => void,
+  textPhase: string,
+  setTextPhase: (textPhase: string) => void,
 }
 
 export const useGameStore = create<GameStore>((set) => ({
@@ -53,6 +55,11 @@ export const useGameStore = create<GameStore>((set) => ({
   winner: false,
   setWinner: (winner) => {
     set ({ winner })
-  }
+  },
+
+  textPhase: 'Расстановка',
+  setTextPhase: (textPhase) => {
+    set({ textPhase })
+  },
   
 }))

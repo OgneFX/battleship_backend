@@ -1,21 +1,20 @@
 import { useGameStore } from '../store/GameStore.ts';
 import { ships } from '../data/mock_ships'
+import {useGameResetProps} from '../interfaces/interfaces.ts'
 
-import { useCallback } from 'react';
-
-export function useGameReset( disconnectSocket: any) {
-  const { setGamePhase, setWinner, setGridSM, setEnemyGrid, setTurn, makeGrid } = useGameStore(state => state);
+export function useGameReset(  {disconnectSocket}: useGameResetProps ) {
+  const { setGamePhase, setWinner, setGridSM, setEnemyGrid, setTurn, makeGrid, setTextPhase } = useGameStore(state => state);
   
-  
-  const resetGame = () => useCallback(() =>{
-    setGamePhase("placement"); 
+  const resetGame = () => {
+    disconnectSocket();
+    setGamePhase(null); 
     setWinner(false); 
     setGridSM(makeGrid()); 
     setEnemyGrid(makeGrid()); 
-    setTurn(false); 
+    setTurn(false);
+    setTextPhase('Расстановка'); 
     ships.map((item) => { item.isPlaces = false })
-    disconnectSocket;
-  },[disconnectSocket])
+  }
 
   return { resetGame };
 }

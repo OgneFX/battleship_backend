@@ -1,17 +1,12 @@
-import { FC, Fragment, useCallback } from 'react';
+import { FC, Fragment } from 'react';
 import { useGameStore } from '../../store/GameStore.ts';
 
-
 interface EnemyGameBoardProps {
-  pushShoot: any
+  pushShoot: (x: number, y: number) => void;
 }
 
-
 export const EnemyGameBoard: FC<EnemyGameBoardProps> = ({pushShoot}) => {
-  const { enemyGrid, setEnemyGrid, turn } = useGameStore(state => state)
-  
-
-  
+  const { enemyGrid, setEnemyGrid, turn } = useGameStore(state => state)  
   const letter = ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'К'].map(
     (item) =>
      <div key={`${item}-letterSymbol`}>
@@ -19,32 +14,28 @@ export const EnemyGameBoard: FC<EnemyGameBoardProps> = ({pushShoot}) => {
     </div>
   );
 
-  const checkForShoot = useCallback((x: number, y: number) => {
-    console.log(enemyGrid[x][y])
+  const checkForShoot = (x: number, y: number) => {
     const newGrid = enemyGrid
     newGrid.map((row) => row.map((cell) => cell.isHelpView = false))
     if(turn){
       newGrid[x][y].isHelpView = true;
     }
     setEnemyGrid(newGrid)
-  },[enemyGrid])
+  }
 
-  const unCheckForShoot = useCallback(() => {
+  const unCheckForShoot = () => {
     const newGrid = enemyGrid
     newGrid.map((row) => row.map((cell) => cell.isHelpView = false))
     setEnemyGrid(newGrid)
-  }, [enemyGrid])
+  }
 
   const onShoot = (x: number, y: number) => {
     if(turn && !enemyGrid[x][y].hit) {
-      console.log('Нажатие кнопки')
       const newGrid = enemyGrid
       pushShoot(x, y)
       newGrid[x][y].hit = true;
       setEnemyGrid(newGrid)
-    }
-    
-    
+    }  
   }
 
   return (
@@ -65,7 +56,6 @@ export const EnemyGameBoard: FC<EnemyGameBoardProps> = ({pushShoot}) => {
                   {rowIndex + 1}
                 </div>
       
-                
                 {row.map((cell, colIndex) => (
                   <div
                     key={`${rowIndex}-${colIndex}`}
