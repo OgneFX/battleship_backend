@@ -1,28 +1,63 @@
-var players = [];
-function handleConnection(ws) {
-if(players.length >2) {
-  ws.send(JSON.stringify({ type: 'error', message: 'Сервер полон!' }))
-  ws.close();
-  return;
-}
+const { v4: uuidv4 } = require('uuid');
+const games = new Map();
+const waitngPlayers = [];
 
-ws.on('message', (message) => {
+function handleConnection(ws) {
+  if(waitngPlayers > 0) {
+    const opponent = waitngPlayers.shift();
+    const roomId = uuidv4();
+
+    ws.roomId = roomId;
+    opponent.roomId = roomId;
+
+    games.set(roomId, [{ ws: opponent }, { ws }])
+
+  }
+  
+
+  ws.on('message', (message) => {
   const data = JSON.parse(message);
 
-  if(data.type === 'sendGrid') {
-    if (!players.find((player) => player.ws === ws)) {
-      players.push({ ws, grid: data.grid });
-      console.log('yoy')
+  if(data.type === 'createGame') {
+    const roomId = uuidv4();
+    ws.roomId = roomId;
+    games.set(roomId, [{ ws }]);
+    ws.send(JSON.stringify({type: 'gameCreated', roomId}))
+  }
+
+  if(data.type === 'joinGame') {
+    const room = games.get(data.roomId);
+    if(room && room.length === 1) {
+      ws.roomId = data.roomId;
+      room.push({ ws });
+      games.set(data.roomId, room)
+
+      room.forEach((player, index) => {
+        player.ws.send(JSON.stringify({ type: 'readyToPlay', playerIndex: index }));
+      });
+    } else {
+      ws.send(JSON.stringify({ type: 'error', message: 'Невозможно присоединиться' }));
     }
-    if(players.length === 2) {
-      players[0].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: players[1].grid, gameState: 'battle', textPhase: 'Бой', turn: true }))
-      players[1].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: players[0].grid, gameState: 'battle', textPhase: 'Бой',turn: false }))
+    
+  }
+
+  if(data.type === 'sendGrid') {
+    const room = games.get(ws.roomId);
+    if(!room) return
+
+    const player = room.find(p => p.ws === ws)
+    if (player) player.grid = data.grid;
+
+    if(room.every(p => p.grid)) {
+      room[0].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: room[1].grid, gameState: 'battle', textPhase: 'Бой', turn: true }))
+      room[1].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: room[0].grid, gameState: 'battle', textPhase: 'Бой',turn: false }))
     }    
   }
 
   if(data.type === 'shoot') {
-    const enemyPlayer = players.find(player => player.ws !== ws)
-    const itsMe = players.find(player => player.ws === ws)
+    const room = games.get(ws.roomId);
+    const enemyPlayer = room.find(player => player.ws !== ws)
+    const itsMe = room.find(player => player.ws === ws)
     var enemyShipsCount = -1;
     var itsMyShipsCount = -1;
 
@@ -59,14 +94,25 @@ ws.on('message', (message) => {
   }
   
   if (data.type === "leaveGame") {
-    players = players.filter(player => player.ws !== ws);
-    console.log("Игрок отключился");
+    leaveGame(ws);
   }
 })
 
   ws.on('close', () => {
-    players = players.filter(player => player.ws !== ws);
-      console.log(`Игрок отключился ${players}`);
+    leaveGame(ws);
   });
+
+  function leaveGame(ws) {
+    const room = games.get(ws.roomId);
+    if (!room) return;
+  
+    const updatedRoom = room.filter(p => p.ws !== ws);
+    if (updatedRoom.length === 0) {
+      games.delete(ws.roomId);
+    } else {
+      updatedRoom[0].ws.send(JSON.stringify({ type: 'opponentLeft' }));
+      games.set(ws.roomId, updatedRoom);
+    }
+  }
 }
   module.exports = { handleConnection };
