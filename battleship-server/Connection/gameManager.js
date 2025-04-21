@@ -3,43 +3,27 @@ const games = new Map();
 const waitngPlayers = [];
 
 function handleConnection(ws) {
-  if(waitngPlayers > 0) {
+  if(waitngPlayers.length > 0) {
     const opponent = waitngPlayers.shift();
     const roomId = uuidv4();
 
     ws.roomId = roomId;
     opponent.roomId = roomId;
+    games.set(roomId, [{ ws: opponent }, { ws }]);
+    opponent.send(JSON.stringify({ type: 'readyToBattle',  textPhase: 'Бой'}));
+    ws.send(JSON.stringify({ type: 'readyToBattle',  textPhase: 'Бой'}));
 
-    games.set(roomId, [{ ws: opponent }, { ws }])
-
+    console.log(roomId)
+    console.log()
+    console.log(games)
+   
+  } else {
+    waitngPlayers.push(ws);
   }
   
 
   ws.on('message', (message) => {
   const data = JSON.parse(message);
-
-  if(data.type === 'createGame') {
-    const roomId = uuidv4();
-    ws.roomId = roomId;
-    games.set(roomId, [{ ws }]);
-    ws.send(JSON.stringify({type: 'gameCreated', roomId}))
-  }
-
-  if(data.type === 'joinGame') {
-    const room = games.get(data.roomId);
-    if(room && room.length === 1) {
-      ws.roomId = data.roomId;
-      room.push({ ws });
-      games.set(data.roomId, room)
-
-      room.forEach((player, index) => {
-        player.ws.send(JSON.stringify({ type: 'readyToPlay', playerIndex: index }));
-      });
-    } else {
-      ws.send(JSON.stringify({ type: 'error', message: 'Невозможно присоединиться' }));
-    }
-    
-  }
 
   if(data.type === 'sendGrid') {
     const room = games.get(ws.roomId);
@@ -53,6 +37,7 @@ function handleConnection(ws) {
       room[1].ws.send(JSON.stringify({ type: 'startBattle', enemyBoard: room[0].grid, gameState: 'battle', textPhase: 'Бой',turn: false }))
     }    
   }
+
 
   if(data.type === 'shoot') {
     const room = games.get(ws.roomId);
@@ -109,9 +94,10 @@ function handleConnection(ws) {
     const updatedRoom = room.filter(p => p.ws !== ws);
     if (updatedRoom.length === 0) {
       games.delete(ws.roomId);
+      console.log(games)
     } else {
-      updatedRoom[0].ws.send(JSON.stringify({ type: 'opponentLeft' }));
       games.set(ws.roomId, updatedRoom);
+      console.log(games)
     }
   }
 }

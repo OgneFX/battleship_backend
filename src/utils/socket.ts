@@ -10,12 +10,17 @@ export function useWebSocket() {
       console.log('Внутри UseEffect')
       socketRef.current = new WebSocket('ws://localhost:8080');
       socketRef.current.onopen = () => {
-        socketRef.current?.send(JSON.stringify({ type: 'sendGrid', grid }))
+        // socketRef.current?.send(JSON.stringify({ type: 'sendGrid', grid }))
         console.log('Шляпа')
       }
       socketRef.current.onmessage = (event) => {
         const data = JSON.parse(event.data)
+        if(data.type ==='readyToBattle') {
+          socketRef.current?.send(JSON.stringify({ type: 'sendGrid', grid }))
+          setTextPhase(data.textPhase)
+        }
         if(data.type === 'startBattle') {
+          
           setGamePhase(data.gameState)
           setEnemyGrid(data.enemyBoard)
           setTurn(data.turn)  
