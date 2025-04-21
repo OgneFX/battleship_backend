@@ -2,9 +2,9 @@
   "name": "battleship-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "ConnectionWS.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node ConnectionWS.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "echo 'No build step required'"
   },
