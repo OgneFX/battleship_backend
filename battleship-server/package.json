@@ -4,7 +4,7 @@
   "description": "",
   "main": "ConnectionWS.js",
   "scripts": {
-    "start": "node ConnectionWS.js",
+    "start": "node Connection/ConnectionWS.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "echo 'No build step required'"
   },
