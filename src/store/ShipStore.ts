@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { IShip } from "../interfaces/interfaces";
+import { create } from 'zustand';
+import { IShip } from '../interfaces/interfaces';
 
 
 interface ShipStore {

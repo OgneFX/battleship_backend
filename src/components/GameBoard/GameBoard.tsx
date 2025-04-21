@@ -97,18 +97,18 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
 
 
   return (
-    <div className="flex justify-center p-4">
-      <div className="grid grid-cols-11 gap-2 w-fit">
-        <div className="w-10"></div> 
+    <div className='flex justify-center p-4'>
+      <div className='grid grid-cols-11 gap-2 w-fit'>
+        <div className='w-10'></div> 
         {letter.map((char, index) => (
-          <div key={`letter-${index}`} className="flex items-center justify-center w-10 h-10 font-bold">
+          <div key={`letter-${index}`} className='flex items-center justify-center w-10 h-10 font-bold'>
             {char}
           </div>
         ))}
   
         {grid.map((row, rowIndex) => (
           <Fragment key={rowIndex}>
-            <div className="flex items-center justify-center w-10 h-10 font-bold">
+            <div className='flex items-center justify-center w-10 h-10 font-bold'>
               {rowIndex + 1}
             </div>
   
@@ -138,7 +138,7 @@ export function GameBoard({changeSelectedShip}: gameBoardProps) {
                           : 'bg-gray-200'
                   }
                   `}
-              > {cell.hit && (cell.hasShip ? <span className="text-black font-bold">X</span> : <span className="text-black font-bold">•</span>)}</div>
+              > {cell.hit && (cell.hasShip ? <span className='text-black font-bold'>X</span> : <span className='text-black font-bold'>•</span>)}</div>
             ))}
           </Fragment>
         ))}

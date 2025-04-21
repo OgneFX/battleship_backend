@@ -11,9 +11,9 @@ export function ButtonShip() {
   };
 
   useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, []);
     
@@ -30,7 +30,7 @@ export function ButtonShip() {
         <div
           key={ship.id}
           className={`flex space-x-1 p-1 cursor-pointer transition-all size-auto ${
-            ship.isPlaces ? "pointer-events-none opacity-50" : ""}`
+            ship.isPlaces ? 'pointer-events-none opacity-50' : ''}`
           }
           onClick={(e) => {
             handlerSelected(e, ship);
@@ -42,10 +42,10 @@ export function ButtonShip() {
               className={`w-10 h-10 border border-gray-600 flex items-center justify-center transition-all
                 ${
                   ship.isPlaces
-                    ? "border-dashed bg-gray-100" 
+                    ? 'border-dashed bg-gray-100' 
                     : pickedShip?.id === ship.id
-                    ? "bg-blue-500"
-                    : "bg-gray-300"
+                    ? 'bg-blue-500'
+                    : 'bg-gray-300'
                 }`}
             ></div>
           ))}

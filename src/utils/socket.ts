@@ -1,5 +1,5 @@
-import { useRef, useEffect, useCallback } from "react";
-import { useGameStore } from "../store/GameStore.ts";
+import { useRef, useEffect, useCallback } from 'react';
+import { useGameStore } from '../store/GameStore.ts';
 
 export function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
@@ -7,11 +7,8 @@ export function useWebSocket() {
   
   useEffect(() => {
     if(socketRef.current === null && gamePhase === 'placement') {
-      console.log('Внутри UseEffect')
       socketRef.current = new WebSocket('ws://localhost:8080');
       socketRef.current.onopen = () => {
-        // socketRef.current?.send(JSON.stringify({ type: 'sendGrid', grid }))
-        console.log('Шляпа')
       }
       socketRef.current.onmessage = (event) => {
         const data = JSON.parse(event.data)
@@ -46,27 +43,20 @@ export function useWebSocket() {
           setWinner(data.winner)
         }
       }
-      socketRef.current.onclose = () => console.log('Отключение от сервера');
-      socketRef.current.onerror = (error) => console.log('Ошибка' + error);
     }
 }, [gamePhase])
 
   const pushShoot = useCallback((x: number, y: number) => {
-    console.log('dis out')
     if (socketRef.current) {
-      socketRef.current.send(JSON.stringify({ type: "shoot", x, y, grid, enemyGrid }));
+      socketRef.current.send(JSON.stringify({ type: 'shoot', x, y, grid, enemyGrid }));
     }
   }, [grid, enemyGrid]);
 
   const disconnectSocket = useCallback(() => {
-    console.log('dis out')
-    console.log(socketRef.current)
     if (socketRef.current) {
-      console.log('dis in')
-      socketRef.current.send(JSON.stringify({ type: "leaveGame" }));
+      socketRef.current.send(JSON.stringify({ type: 'leaveGame' }));
       socketRef.current.close();
       socketRef.current = null;
-      console.log("Отключение от сервера");
     }
   }, [gamePhase]);
 

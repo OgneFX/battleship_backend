@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import { Phase, Grid } from "../interfaces/interfaces";
+import { create } from 'zustand';
+import { Phase, Grid } from '../interfaces/interfaces';
 import { GRID_SIZE } from '../data/conatants';
 
 const makeGrid = () => {
